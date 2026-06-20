@@ -83,6 +83,25 @@ else
   echo ""
 fi
 
+# ─── External access configuration ───
+echo -e "${CYAN}If this server will be accessed from another device (e.g., running on a VPS),${NC}"
+echo -e "${CYAN}configure the hostname so Vite doesn't block the connection.${NC}"
+read -p "$(echo -e ${YELLOW}"Enter external hostname/IP (or press Enter to skip): "${NC})" ext_host
+if [ -n "$ext_host" ]; then
+  if ! grep -q "VITE_ALLOWED_HOSTS" .env; then
+    echo "VITE_ALLOWED_HOSTS=$ext_host" >> .env
+  fi
+  if ! grep -q "APP_URL=" .env || grep -q "APP_URL=\"\"" .env; then
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+      sed -i '' "s|APP_URL=\"\"|APP_URL=\"http://$ext_host:3000\"|" .env
+    else
+      sed -i "s|APP_URL=\"\"|APP_URL=\"http://$ext_host:3000\"|" .env
+    fi
+  fi
+  echo -e "${GREEN}  ✓ External access configured for $ext_host${NC}"
+fi
+echo ""
+
 # ─── Summary ───
 echo -e "${CYAN}╔══════════════════════════════════════════════════════╗${NC}"
 echo -e "${CYAN}║   Setup Complete                                    ║${NC}"
