@@ -1,0 +1,6 @@
+{
+  "name": "Stream Manager",
+  "description": "Modern SaaS dashboard to monitor and mirror YouTube live streams across connected accounts.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
