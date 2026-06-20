@@ -559,7 +559,21 @@ async function startServer() {
         }
 
         // Create stream entry and start mirroring
-        if (channelId || video.channelId) {
+        if (channelId || video.channelId || accountId) {
+          // Ensure we have a tracked channel — create a temp one if missing
+          if (!channelId && video.channelId && accountId) {
+            const newId = uuidv4();
+            runSql("INSERT INTO tracked_channels (id, account_id, channel_id, channel_name, auto_monitor, auto_mirror) VALUES (?, ?, ?, ?, ?, ?)",
+              [newId, accountId, video.channelId, video.channelName || "Unknown", 0, 0]);
+            channelId = newId;
+          } else if (!channelId && accountId) {
+            // No channel ID at all — create an untracked placeholder
+            const newId = uuidv4();
+            runSql("INSERT INTO tracked_channels (id, account_id, channel_id, channel_name, auto_monitor, auto_mirror) VALUES (?, ?, ?, ?, ?, ?)",
+              [newId, accountId, "UC_temp_" + newId.slice(0, 8), video.channelName || "Unknown", 0, 0]);
+            channelId = newId;
+          }
+
           const streamId = uuidv4();
           runSql(
             `INSERT INTO streams (id, source_stream_id, tracked_channel_id, title, thumbnail, status, stream_type, viewer_count, started_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,

@@ -188,8 +188,8 @@ export async function getVideoInfo(videoId: string): Promise<{
     const bi = info.basic_info;
     return {
       title: bi.title || '',
-      channelId: bi.channel_id || '',
-      channelName: bi.author || '',
+      channelId: bi.channel_id || bi.channel?.id || '',
+      channelName: bi.author || bi.channel?.name || '',
       isLive: !!bi.is_live,
       isUpcoming: !!bi.is_upcoming,
       viewCount: bi.view_count || 0,
